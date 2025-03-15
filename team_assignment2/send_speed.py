@@ -2,9 +2,9 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 
-class SpeedController(Node):
+class SendSpeed(Node):
     def __init__(self):
-        super().__init__('speed_controller')
+        super().__init__('send_speed')
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
         self.timer = self.create_timer(0.1, self.send_velocity_command) 
         self.linear_speed = 0.5
