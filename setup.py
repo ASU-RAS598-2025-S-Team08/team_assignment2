@@ -23,7 +23,7 @@ setup(
             'camera_viewer = team_assignment2.camera_viewer:main',
             'depth_viewer = team_assignment2.depth_viewer:main',
             'color_selector = team_assignment2.color_selector:main',
-            'color_follower = team_assignment2.color_follower:main',
+            'color_detector = team_assignment2.color_detector:main',
         ],
     },
 )
