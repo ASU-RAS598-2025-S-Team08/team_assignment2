@@ -2,13 +2,14 @@ import cv2 as cv
 import rclpy as r
 import numpy as np
 import cv_bridge as c
+import message_filters as m
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from team_assignment2_msgs.msg import Blob
 
-class ColorFollower(Node):
+class ColorDetector(Node):
     def __init__(self):
-        super(ColorFollower, self).__init__(node_name='color_follower')
+        super(ColorDetector, self).__init__(node_name='color_detector')
         self.declare_parameter('camera_stream', '/color/preview/image')
         self.r_hmin, self.r_smin, self.r_vmin = 0, 93, 0
         self.r_hmax, self.r_smax, self.r_vmax = 35, 255, 255
@@ -21,10 +22,16 @@ class ColorFollower(Node):
         self.get_logger().info(f"BLUE ----> HMIN={self.b_hmin} SMIN={self.b_smin} VMIN={self.b_vmin} HMAX={self.b_hmax} SMAX={self.b_smax} VMAX={self.b_vmax}")
         self.convertor = c.CvBridge()
         self.blob_publisher = self.create_publisher(Blob, '/blob', 10)
-        self.create_subscription(Image, self.get_parameter('camera_stream').get_parameter_value().string_value, self.callback, 10)
+        image_subscriber = m.Subscriber(self, Image, self.get_parameter('camera_stream').get_parameter_value().string_value)
+        depth_subscriber = m.Subscriber(self, Image, '/stereo/depth')
+        synchronizer = m.ApproximateTimeSynchronizer([image_subscriber, depth_subscriber], 10, 1)
+        synchronizer.registerCallback(self.callback)
 
-    def callback(self, image_message: Image):
+    def callback(self, image_message: Image, depth_message: Image):
         image = self.convertor.imgmsg_to_cv2(image_message, desired_encoding='bgr8')
+        image_h, image_w, _ = image.shape
+        depth_map = self.convertor.imgmsg_to_cv2(depth_message, desired_encoding='16UC1')
+        depth_map = cv.resize(depth_map, (image_w, image_h))
         hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
         ##########################################################################################
         r_lower = np.array([self.r_hmin, self.r_smin, self.r_vmin])
@@ -36,6 +43,7 @@ class ColorFollower(Node):
         r_areas = []
         r_xs = []
         r_ys = []
+        r_depths = []
         for r_contour in r_contours:
             r_area = cv.contourArea(r_contour)
             r_areas.append(r_area)
@@ -44,6 +52,8 @@ class ColorFollower(Node):
             r_xs.append(r_x)
             r_y = int(r_moment["m01"] / r_moment["m00"])
             r_ys.append(r_y)
+            r_depth = int(depth_map[r_y, r_x])
+            r_depths.append(r_depth)
         image = cv.drawContours(image, r_contours, -1, (0, 255, 0), 2)
         index = r_areas.index(max(r_areas))
         r_x, r_y = r_xs[index], r_ys[index]
@@ -58,6 +68,7 @@ class ColorFollower(Node):
         g_areas = []
         g_xs = []
         g_ys = []
+        g_depths = []
         for g_contour in g_contours:
             g_area = cv.contourArea(g_contour)
             g_areas.append(g_area)
@@ -66,6 +77,8 @@ class ColorFollower(Node):
             g_xs.append(g_x)
             g_y = int(g_moment["m01"] / g_moment["m00"])
             g_ys.append(g_y)
+            g_depth = int(depth_map[g_y, g_x])
+            g_depths.append(g_depth)
         image = cv.drawContours(image, g_contours, -1, (255, 0, 0), 2)
         index = g_areas.index(max(g_areas))
         g_x, g_y = g_xs[index], g_ys[index]
@@ -80,6 +93,7 @@ class ColorFollower(Node):
         b_areas = []
         b_xs = []
         b_ys = []
+        b_depths = []
         for b_contour in b_contours:
             b_area = cv.contourArea(b_contour)
             b_areas.append(b_area)
@@ -88,6 +102,8 @@ class ColorFollower(Node):
             b_xs.append(b_x)
             b_y = int(b_moment["m01"] / b_moment["m00"])
             b_ys.append(b_y)
+            b_depth = int(depth_map[b_y, b_x])
+            b_depths.append(b_depth)
         image = cv.drawContours(image, b_contours, -1, (0, 0, 255), 2)
         index = b_areas.index(max(b_areas))
         b_x, b_y = b_xs[index], b_ys[index]
@@ -101,11 +117,12 @@ class ColorFollower(Node):
         blob_message.areas = r_areas + g_areas + b_areas
         blob_message.xs = r_xs + g_xs + b_xs
         blob_message.ys = r_ys + g_ys + b_ys
+        blob_message.depths = r_depths + g_depths + b_depths
         self.blob_publisher.publish(blob_message)
 
 def main(args=None):
     r.init()
-    color_follower = ColorFollower()
+    color_follower = ColorDetector()
     r.spin(color_follower)
     color_follower.destroy_node()
     r.shutdown()
