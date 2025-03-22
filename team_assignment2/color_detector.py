@@ -43,7 +43,7 @@ class ColorDetector(Node):
         r_areas = []
         r_xs = []
         r_ys = []
-        r_depths = []
+        r_zs = []
         for r_contour in r_contours:
             r_area = cv.contourArea(r_contour)
             r_areas.append(r_area)
@@ -52,8 +52,8 @@ class ColorDetector(Node):
             r_xs.append(r_x)
             r_y = int(r_moment["m01"] / r_moment["m00"])
             r_ys.append(r_y)
-            r_depth = int(depth_map[r_y, r_x])
-            r_depths.append(r_depth)
+            r_z = int(depth_map[r_y, r_x])
+            r_zs.append(r_z)
         image = cv.drawContours(image, r_contours, -1, (0, 255, 0), 2)
         index = r_areas.index(max(r_areas))
         r_x, r_y = r_xs[index], r_ys[index]
@@ -68,7 +68,7 @@ class ColorDetector(Node):
         g_areas = []
         g_xs = []
         g_ys = []
-        g_depths = []
+        g_zs = []
         for g_contour in g_contours:
             g_area = cv.contourArea(g_contour)
             g_areas.append(g_area)
@@ -77,8 +77,8 @@ class ColorDetector(Node):
             g_xs.append(g_x)
             g_y = int(g_moment["m01"] / g_moment["m00"])
             g_ys.append(g_y)
-            g_depth = int(depth_map[g_y, g_x])
-            g_depths.append(g_depth)
+            g_z = int(depth_map[g_y, g_x])
+            g_zs.append(g_z)
         image = cv.drawContours(image, g_contours, -1, (255, 0, 0), 2)
         index = g_areas.index(max(g_areas))
         g_x, g_y = g_xs[index], g_ys[index]
@@ -93,7 +93,7 @@ class ColorDetector(Node):
         b_areas = []
         b_xs = []
         b_ys = []
-        b_depths = []
+        b_zs = []
         for b_contour in b_contours:
             b_area = cv.contourArea(b_contour)
             b_areas.append(b_area)
@@ -102,8 +102,8 @@ class ColorDetector(Node):
             b_xs.append(b_x)
             b_y = int(b_moment["m01"] / b_moment["m00"])
             b_ys.append(b_y)
-            b_depth = int(depth_map[b_y, b_x])
-            b_depths.append(b_depth)
+            b_z = int(depth_map[b_y, b_x])
+            b_zs.append(b_z)
         image = cv.drawContours(image, b_contours, -1, (0, 0, 255), 2)
         index = b_areas.index(max(b_areas))
         b_x, b_y = b_xs[index], b_ys[index]
@@ -117,7 +117,7 @@ class ColorDetector(Node):
         blob_message.areas = r_areas + g_areas + b_areas
         blob_message.xs = r_xs + g_xs + b_xs
         blob_message.ys = r_ys + g_ys + b_ys
-        blob_message.depths = r_depths + g_depths + b_depths
+        blob_message.zs = r_zs + g_zs + b_zs
         self.blob_publisher.publish(blob_message)
 
 def main(args=None):
