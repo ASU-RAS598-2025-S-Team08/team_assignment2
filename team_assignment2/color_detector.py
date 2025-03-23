@@ -118,6 +118,8 @@ class ColorDetector(Node):
         blob_message.xs = r_xs + g_xs + b_xs
         blob_message.ys = r_ys + g_ys + b_ys
         blob_message.zs = r_zs + g_zs + b_zs
+        blob_message.width = image_w
+        blob_message.height = image_h
         self.blob_publisher.publish(blob_message)
 
 def main(args=None):
