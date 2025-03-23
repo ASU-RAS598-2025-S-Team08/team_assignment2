@@ -7,7 +7,7 @@ class RedFollower(Node):
     def __init__(self):
         super(RedFollower, self).__init__(node_name='red_follower')
         self.closest = 1
-        self.angular_speed = 0.001
+        self.angular_speed = 0.005
         self.linear_speed = 0.002
         self.found_red = False
         self.cmd = {'angular': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'linear': {'x': 0.0, 'y': 0.0, 'z': 0.0}}

@@ -37,8 +37,8 @@ class ColorDetector(Node):
         r_lower = np.array([self.r_hmin, self.r_smin, self.r_vmin])
         r_upper = np.array([self.r_hmax, self.r_smax, self.r_vmax])
         r_mask = cv.inRange(hsv, r_lower, r_upper)
-        r_mask = cv.erode(r_mask, kernel=np.ones(shape=(3, 3)), iterations=1)
-        r_mask = cv.dilate(r_mask, kernel=np.ones(shape=(3, 3)), iterations=3)
+        r_mask = cv.erode(r_mask, kernel=np.ones(shape=(5, 5)), iterations=1)
+        r_mask = cv.dilate(r_mask, kernel=np.ones(shape=(3, 3)), iterations=2)
         r_contours, _ = cv.findContours(r_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         r_areas = []
         r_xs = []
@@ -63,8 +63,8 @@ class ColorDetector(Node):
         g_lower = np.array([self.g_hmin, self.g_smin, self.g_vmin])
         g_upper = np.array([self.g_hmax, self.g_smax, self.g_vmax])
         g_mask = cv.inRange(hsv, g_lower, g_upper)
-        g_mask = cv.erode(g_mask, kernel=np.ones(shape=(3, 3)), iterations=1)
-        g_mask = cv.dilate(g_mask, kernel=np.ones(shape=(3, 3)), iterations=3)
+        g_mask = cv.erode(g_mask, kernel=np.ones(shape=(5, 5)), iterations=1)
+        g_mask = cv.dilate(g_mask, kernel=np.ones(shape=(3, 3)), iterations=2)
         g_contours, _ = cv.findContours(g_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         g_areas = []
         g_xs = []
@@ -85,8 +85,8 @@ class ColorDetector(Node):
         b_lower = np.array([self.b_hmin, self.b_smin, self.b_vmin])
         b_upper = np.array([self.b_hmax, self.b_smax, self.b_vmax])
         b_mask = cv.inRange(hsv, b_lower, b_upper)
-        b_mask = cv.erode(b_mask, kernel=np.ones(shape=(3, 3)), iterations=1)
-        b_mask = cv.dilate(b_mask, kernel=np.ones(shape=(3, 3)), iterations=3)
+        b_mask = cv.erode(b_mask, kernel=np.ones(shape=(5, 5)), iterations=1)
+        b_mask = cv.dilate(b_mask, kernel=np.ones(shape=(3, 3)), iterations=2)
         b_contours, _ = cv.findContours(b_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         b_areas = []
         b_xs = []
