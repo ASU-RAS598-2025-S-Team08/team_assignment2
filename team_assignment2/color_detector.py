@@ -55,8 +55,9 @@ class ColorDetector(Node):
             r_z = int(depth_map[r_y, r_x])
             r_zs.append(r_z)
         image = cv.drawContours(image, r_contours, -1, (0, 255, 0), 2)
-        # index = r_areas.index(max(r_areas))
-        # r_x, r_y = r_xs[index], r_ys[index]
+        index = r_areas.index(max(r_areas))
+        r_x, r_y, r_z = r_xs[index], r_ys[index], depth_map[r_y, r_x]
+        self.get_logger().info(f"{r_x}, {r_y}, {r_z}")
         # image = cv.circle(image, (r_x, r_y), 2, (0, 255, 0), -1)
         ##########################################################################################
         g_lower = np.array([self.g_hmin, self.g_smin, self.g_vmin])
@@ -80,9 +81,6 @@ class ColorDetector(Node):
             g_z = int(depth_map[g_y, g_x])
             g_zs.append(g_z)
         image = cv.drawContours(image, g_contours, -1, (255, 0, 0), 2)
-        # index = g_areas.index(max(g_areas))
-        # g_x, g_y = g_xs[index], g_ys[index]
-        # image = cv.circle(image, (g_x, g_y), 2, (255, 0, 0), -1)
         ##########################################################################################
         b_lower = np.array([self.b_hmin, self.b_smin, self.b_vmin])
         b_upper = np.array([self.b_hmax, self.b_smax, self.b_vmax])
@@ -105,9 +103,6 @@ class ColorDetector(Node):
             b_z = int(depth_map[b_y, b_x])
             b_zs.append(b_z)
         image = cv.drawContours(image, b_contours, -1, (0, 0, 255), 2)
-        # index = b_areas.index(max(b_areas))
-        # b_x, b_y = b_xs[index], b_ys[index]
-        # image = cv.circle(image, (b_x, b_y), 2, (0, 0, 255), -1)
         ##########################################################################################
         cv.imshow('Image', image)
         cv.waitKey(1)
