@@ -7,8 +7,9 @@ class RedFollower(Node):
     def __init__(self):
         super(RedFollower, self).__init__(node_name='red_follower')
         self.closest = 1
-        self.angular_speed = 0.01
-        self.linear_speed = 0.02
+        self.angular_speed = 0.001
+        self.linear_speed = 0.002
+        self.found_red = False
         self.cmd = {'angular': {'x': 0.0, 'y': 0.0, 'z': 0.0}, 'linear': {'x': 0.0, 'y': 0.0, 'z': 0.0}}
         self.cmd_publisher = self.create_publisher(Twist, '/c3_12/cmd_vel', 10)
         blob_subscriber = self.create_subscription(Blob, '/blob', self.callback, 10)
@@ -27,6 +28,7 @@ class RedFollower(Node):
             r_y = blob_message.ys[0:r_blobs][index]
             r_z = blob_message.zs[0:r_blobs][index]
             self.get_logger().info(f"FOUND RED AT: {r_x} {r_y} {r_z}")
+            self.found_red = True
         #     if r_x > blob_message.width / 2.0:
         #     elif r_x < blob_message.width / 2.0:
         #         cmd_message.angular.z = self.angular_speed

@@ -11,8 +11,8 @@ class ColorDetector(Node):
     def __init__(self):
         super(ColorDetector, self).__init__(node_name='color_detector')
         self.declare_parameter('camera_stream', '/color/preview/image')
-        self.r_hmin, self.r_smin, self.r_vmin = 0, 143, 160
-        self.r_hmax, self.r_smax, self.r_vmax = 179, 255, 255
+        self.r_hmin, self.r_smin, self.r_vmin = 163, 80, 119
+        self.r_hmax, self.r_smax, self.r_vmax = 179, 214, 255
         self.get_logger().info(f"RED ----> HMIN={self.r_hmin} SMIN={self.r_smin} VMIN={self.r_vmin} HMAX={self.r_hmax} SMAX={self.r_smax} VMAX={self.r_vmax}")
         self.g_hmin, self.g_smin, self.g_vmin = 45, 60, 0
         self.g_hmax, self.g_smax, self.g_vmax = 71, 255, 255
@@ -37,8 +37,8 @@ class ColorDetector(Node):
         r_lower = np.array([self.r_hmin, self.r_smin, self.r_vmin])
         r_upper = np.array([self.r_hmax, self.r_smax, self.r_vmax])
         r_mask = cv.inRange(hsv, r_lower, r_upper)
+        r_mask = cv.erode(r_mask, kernel=np.ones(shape=(3, 3)), iterations=1)
         r_mask = cv.dilate(r_mask, kernel=np.ones(shape=(3, 3)), iterations=3)
-        r_mask = cv.erode(r_mask, kernel=np.ones(shape=(3, 3)), iterations=2)
         r_contours, _ = cv.findContours(r_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         r_areas = []
         r_xs = []
@@ -55,16 +55,16 @@ class ColorDetector(Node):
             r_z = int(depth_map[r_y, r_x])
             r_zs.append(r_z)
         image = cv.drawContours(image, r_contours, -1, (0, 255, 0), 2)
-        index = r_areas.index(max(r_areas))
-        r_x, r_y, r_z = r_xs[index], r_ys[index], depth_map[r_y, r_x]
-        self.get_logger().info(f"{r_x}, {r_y}, {r_z}")
+        # index = r_areas.index(max(r_areas))
+        # r_x, r_y, r_z = r_xs[index], r_ys[index], depth_map[r_y, r_x]
+        # self.get_logger().info(f"{r_x}, {r_y}, {r_z}")
         # image = cv.circle(image, (r_x, r_y), 2, (0, 255, 0), -1)
         ##########################################################################################
         g_lower = np.array([self.g_hmin, self.g_smin, self.g_vmin])
         g_upper = np.array([self.g_hmax, self.g_smax, self.g_vmax])
         g_mask = cv.inRange(hsv, g_lower, g_upper)
+        g_mask = cv.erode(g_mask, kernel=np.ones(shape=(3, 3)), iterations=1)
         g_mask = cv.dilate(g_mask, kernel=np.ones(shape=(3, 3)), iterations=3)
-        g_mask = cv.erode(g_mask, kernel=np.ones(shape=(3, 3)), iterations=2)
         g_contours, _ = cv.findContours(g_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         g_areas = []
         g_xs = []
@@ -80,13 +80,13 @@ class ColorDetector(Node):
             g_ys.append(g_y)
             g_z = int(depth_map[g_y, g_x])
             g_zs.append(g_z)
-        image = cv.drawContours(image, g_contours, -1, (255, 0, 0), 2)
+        # image = cv.drawContours(image, g_contours, -1, (255, 0, 0), 2)
         ##########################################################################################
         b_lower = np.array([self.b_hmin, self.b_smin, self.b_vmin])
         b_upper = np.array([self.b_hmax, self.b_smax, self.b_vmax])
         b_mask = cv.inRange(hsv, b_lower, b_upper)
+        b_mask = cv.erode(b_mask, kernel=np.ones(shape=(3, 3)), iterations=1)
         b_mask = cv.dilate(b_mask, kernel=np.ones(shape=(3, 3)), iterations=3)
-        b_mask = cv.erode(b_mask, kernel=np.ones(shape=(3, 3)), iterations=2)
         b_contours, _ = cv.findContours(b_mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         b_areas = []
         b_xs = []
@@ -102,7 +102,7 @@ class ColorDetector(Node):
             b_ys.append(b_y)
             b_z = int(depth_map[b_y, b_x])
             b_zs.append(b_z)
-        image = cv.drawContours(image, b_contours, -1, (0, 0, 255), 2)
+        # image = cv.drawContours(image, b_contours, -1, (0, 0, 255), 2)
         ##########################################################################################
         cv.imshow('Image', image)
         cv.waitKey(1)
