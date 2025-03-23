@@ -24,6 +24,7 @@ setup(
             'depth_viewer = team_assignment2.depth_viewer:main',
             'color_selector = team_assignment2.color_selector:main',
             'color_detector = team_assignment2.color_detector:main',
+            'red_follower = team_assignment2.red_follower:main',
         ],
     },
 )
