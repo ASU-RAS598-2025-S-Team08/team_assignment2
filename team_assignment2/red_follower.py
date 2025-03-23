@@ -16,28 +16,30 @@ class RedFollower(Node):
     def callback(self, blob_message: Blob):
         r_blobs = blob_message.objects[0]
         r_areas = blob_message.areas[0:r_blobs]
-        index = r_areas.index(max(r_areas))
-        r_x = blob_message.xs[0:r_blobs][index]
-        r_y = blob_message.ys[0:r_blobs][index]
-        r_z = blob_message.zs[0:r_blobs][index]
-        self.get_logger().info(f"{r_x} {r_y} {r_z}")
         cmd_message = Twist()
-        if r_x > blob_message.width / 2.0:
+        if len(r_areas) == 0:
             cmd_message.angular.z = -1 * self.angular_speed
-            self.cmd['angular']['z'] = 1 * self.angular_speed
             self.cmd_publisher.publish(cmd_message)
-        elif r_x < blob_message.width / 2.0:
-            cmd_message.angular.z = self.angular_speed
-            self.cmd['angular']['z'] = self.angular_speed
-            self.cmd_publisher.publish(cmd_message)
-        if r_z > self.closest:
-            cmd_message.linear.z = self.linear_speed
-            self.cmd['angular']['z'] = self.linear_speed
-            self.cmd_publisher.publish(cmd_message)
-        elif r_x < blob_message.width / 2.0:
-            cmd_message.linear.z = -1 * self.linear_speed
-            self.cmd['angular']['z'] = -1 *self.linear_speed
-            self.cmd_publisher.publish(cmd_message)
+            self.get_logger().info("COULDN'T FIND RED....")
+        else:
+            index = r_areas.index(max(r_areas))
+            r_x = blob_message.xs[0:r_blobs][index]
+            r_y = blob_message.ys[0:r_blobs][index]
+            r_z = blob_message.zs[0:r_blobs][index]
+            self.get_logger().info(f"FOUND RED AT: {r_x} {r_y} {r_z}")
+        #     if r_x > blob_message.width / 2.0:
+        #     elif r_x < blob_message.width / 2.0:
+        #         cmd_message.angular.z = self.angular_speed
+        #         self.cmd['angular']['z'] = self.angular_speed
+        #         self.cmd_publisher.publish(cmd_message)
+        # if r_z > self.closest:
+        #     cmd_message.linear.z = self.linear_speed
+        #     self.cmd['angular']['z'] = self.linear_speed
+        #     self.cmd_publisher.publish(cmd_message)
+        # elif r_x < blob_message.width / 2.0:
+        #     cmd_message.linear.z = -1 * self.linear_speed
+        #     self.cmd['angular']['z'] = -1 *self.linear_speed
+        #     self.cmd_publisher.publish(cmd_message)
 
 def main(args=None):
     r.init(args=args)
