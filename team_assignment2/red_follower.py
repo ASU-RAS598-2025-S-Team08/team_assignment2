@@ -16,6 +16,8 @@ class RedFollower(Node):
         r_x = blob_message.xs[0:r_blobs][index]
         r_y = blob_message.ys[0:r_blobs][index]
         r_z = blob_message.zs[0:r_blobs][index]
+        if r_x > blob_message.width / 2.0 or r_x < blob_message.width / 2.0:
+            pass
 
 def main(args=None):
     r.init(args=args)
