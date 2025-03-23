@@ -26,9 +26,9 @@ class RedFollower(Node):
             r_z = blob_message.zs[0:r_blobs][index]
             self.get_logger().info(f"FOUND RED AT: {r_x} {r_y} {r_z}")
             if r_x > blob_message.width / 2.0:
-                cmd_message.angular.z = -1 * self.angular_speed
-            else:
                 cmd_message.angular.z = self.angular_speed
+            else:
+                cmd_message.angular.z = -1 * self.angular_speed
             if r_z > self.closest:
                 cmd_message.linear.x = self.linear_speed
             else:
