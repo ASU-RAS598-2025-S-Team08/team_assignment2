@@ -17,7 +17,7 @@ class RedFollower(Node):
         r_areas = blob_message.areas[0:r_blobs]
         cmd_message = Twist()
         if len(r_areas) == 0:
-            cmd_message.angular.z = self.angular_speed
+            cmd_message.angular.z = -1 * self.angular_speed
             self.cmd_publisher.publish(cmd_message)
             self.get_logger().info("COULDN'T FIND RED....")
         else:
@@ -27,9 +27,9 @@ class RedFollower(Node):
             r_z = blob_message.zs[0:r_blobs][index]
             self.get_logger().info(f"FOUND RED AT: {r_x} {r_y} {r_z}")
             if r_x > blob_message.width / 2.0:
-                cmd_message.angular.z = -1 * self.angular_speed
-            else:
                 cmd_message.angular.z = self.angular_speed
+            else:
+                cmd_message.angular.z = -1 * self.angular_speed
             self.cmd_publisher.publish(cmd_message)
             if r_z > self.closest:
                 cmd_message.linear.x = self.linear_speed

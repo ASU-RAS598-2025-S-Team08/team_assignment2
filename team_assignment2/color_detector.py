@@ -11,8 +11,8 @@ class ColorDetector(Node):
     def __init__(self):
         super(ColorDetector, self).__init__(node_name='color_detector')
         self.declare_parameter('camera_stream', '/color/preview/image')
-        self.r_hmin, self.r_smin, self.r_vmin = 163, 80, 119
-        self.r_hmax, self.r_smax, self.r_vmax = 179, 214, 255
+        self.r_hmin, self.r_smin, self.r_vmin = 171, 0, 0
+        self.r_hmax, self.r_smax, self.r_vmax = 179, 255, 255
         self.get_logger().info(f"RED ----> HMIN={self.r_hmin} SMIN={self.r_smin} VMIN={self.r_vmin} HMAX={self.r_hmax} SMAX={self.r_smax} VMAX={self.r_vmax}")
         self.g_hmin, self.g_smin, self.g_vmin = 45, 60, 0
         self.g_hmax, self.g_smax, self.g_vmax = 71, 255, 255
@@ -100,9 +100,13 @@ class ColorDetector(Node):
             b_ys.append(b_y)
             b_z = int(depth_map[b_y, b_x])
             b_zs.append(b_z)
-        image = cv.drawContours(image, r_contours, -1, (0, 255, 0), 2)
-        image = cv.drawContours(image, g_contours, -1, (255, 0, 0), 2)
-        image = cv.drawContours(image, b_contours, -1, (0, 0, 255), 2)
+        image = cv.drawContours(image, r_contours, -1, (255, 255, 255), 2)
+        self.get_logger().info(f"{r_areas}")
+        self.get_logger().info(f"{r_xs}")
+        self.get_logger().info(f"{r_ys}")
+        self.get_logger().info(f"{r_zs}")
+        # image = cv.drawContours(image, g_contours, -1, (255, 255, 255), 2)
+        # image = cv.drawContours(image, b_contours, -1, (255, 255, 255), 2)
         ##########################################################################################
         cv.imshow('Image', image)
         cv.waitKey(1)
